@@ -32,13 +32,13 @@ var Web3 = require('web3');
 const EthereumTx = require('ethereumjs-tx');
 const ethUtil = require('ethereumjs-util');
 const rlp = require('rlp');
-const WebSocket = require('ws');
+
+const Keychain = require('./index');
 const API_KEY = 'https://ropsten.infura.io/v3/046804e3dd3240b09834531326f310cf';
 
+
 let web3 = new Web3(new Web3.providers.HttpProvider(API_KEY)); //
-const ws = new WebSocket('ws://localhost:16384/');
-
-
+ 
 // params
 const key = 'test1@6de493f01bf590c0';
 const to = '0xE8899BA12578d60e4D0683a596EDaCbC85eC18CC';
@@ -68,7 +68,7 @@ let transactionParams = {
 }
 
 signTransaction = async (txParams, keyname) => {
- 
+  const keychain = new Keychain();
   const rsv = async (signature) => {
     const ret = {};
     ret.r = `0x${signature.slice(0, 64)}`;
@@ -86,32 +86,12 @@ signTransaction = async (txParams, keyname) => {
     return ret;
   }
 
-  const signHexCommand = (hexraw) => {
-    return {
-      command: "sign_hex",
-      params: {
-        transaction: hexraw,
-        blockchain_type: "ethereum",
-        keyname: keyname
-      }
-    }
-  }
-
-  ws.onopen = async () => {
+  keychain.ws.onopen = async () => {
     const rawHex = await buildTxSinature(txParams);
     const messageHash = web3.eth.accounts.hashMessage(rawHex);
     console.log(messageHash);
-    sendCommand(signHexCommand(rawHex));
-  }
-
-  const sendCommand = (command) => {
-    ws.send(JSON.stringify(command));
-  }
-
-  ws.on('message', async (response) => {
-    const data = JSON.parse(response);
-    const signature = data.result;
-    let ret = await rsv(signature);
+    const data = await keychain.signHex(rawHex, keyname);
+    let ret = await rsv(data.result);
     console.log(ret);
     let rawParams = {
       ...txParams,
@@ -120,8 +100,7 @@ signTransaction = async (txParams, keyname) => {
     const rawTransaction = await buildRawTransaction(rawParams);
     const rawTransactionHex = `0x${rawTransaction}`;
     console.log(rawTransactionHex);
-    ws.close();
-  });
+  }
 
   const buildTxSinature = async (txParams) => {
     class EthereumTxKeychain extends EthereumTx {
