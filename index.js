@@ -34,10 +34,11 @@ web3Override = (web3) => {
   signTransaction = async (txParams, keyname) => {
     if (!txParams.chainId) {
       const chainId = await web3.eth.net.getId();
-      txParams = { 
-        ...txParams,
-        chainId
-      };
+      txParams = Object.assign({}, txParams, { chainId })
+      // txParams = { 
+      //   ...txParams,
+      //   chainId
+      // };
     }
 
     const keychain = await Keychain.create();
@@ -93,22 +94,25 @@ web3Override = (web3) => {
     const messageHash = web3.eth.accounts.hashMessage(rawHex);
     const data = await keychain.signHex(rawHex, keyname);
     let ret = await rsv(data.result);
-    let rawParams = {
-      ...txParams,
-      ...ret
-    }
+    let rawParams = Object.assign({}, txParams, ret);
+    // {
+    //   ...txParams,
+    //   ...ret
+    // }
     const rawTransaction = await buildRawTransaction(rawParams);
     const rawTransactionHex = `0x${rawTransaction}`;
     await keychain.term();
-    console.log({
-      rawTransactionHex,
-      ...ret,
-      messageHash
-    });
+    // console.log({
+    //   rawTransactionHex,
+    //   ...ret,
+    //   messageHash
+    // });
 
     return {
       rawTransactionHex,
-      ...ret,
+      r: ret.r,
+      s: ret.s,
+      v: ret.v,
       messageHash
     };
   }
