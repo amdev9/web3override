@@ -23,7 +23,7 @@ to - String: (optional) The recevier of the transaction, can be empty when deplo
 data - String: (optional) The call data of the transaction, can be empty for simple value transfers.
 value - String: (optional) The value of the transaction in wei.
 gasPrice - String: (optional) The gas price set by this transaction, if empty, it will use web3.eth.gasPrice()
-gas - String: The gas provided by the transaction.
+gas / gasLimit - String: The gas provided by the transaction.
 
 */
 
