@@ -137,4 +137,7 @@ signTransaction = async (txParams, keyname) => {
   return { rawTransactionHex, ...ret, messageHash };
 }
 
-signTransaction(transactionParams, key);
+
+web3.eth.accounts.signTransaction = signTransaction;
+
+web3.eth.accounts.signTransaction(transactionParams, key);
