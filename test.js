@@ -6,7 +6,6 @@ const API_KEY = 'https://ropsten.infura.io/v3/046804e3dd3240b09834531326f310cf';
 let web3 = new Web3(new Web3.providers.HttpProvider(API_KEY)); 
 
 const to = '0xE8899BA12578d60e4D0683a596EDaCbC85eC18CC';
-const chainId = 3;
 const value = 100;
 const data = '';
 const gasLimit = 21000; 
@@ -19,7 +18,6 @@ const transactionParams = {
   to,
   value,
   data,
-  chainId,
   gasLimit
 }
 
