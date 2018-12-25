@@ -140,4 +140,6 @@ signTransaction = async (txParams, keyname) => {
 
 web3.eth.accounts.signTransaction = signTransaction;
 
+// return web3 from web3-keychain npm module
+
 web3.eth.accounts.signTransaction(transactionParams, key);
