@@ -33,7 +33,7 @@ let transactionParams = {
 main = async () => {
   const keychain = await Keychain.create(); // create Keychain class instance & wait for ws connection to be open
 
-  await web3.eth.accounts.signTransaction(transactionParams, keychain, key); // use overriden web3 function 
+  await web3.eth.accounts.signTransaction(transactionParams, keychain, key); // overriden web3 function usage
   
   await keychain.term();  // terminate keychain connection
 }
