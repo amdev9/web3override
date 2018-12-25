@@ -16,6 +16,7 @@ class Keychain {
   async initialize() {
     await this.wsp.open();
   }
+
   async term() {
     await this.wsp.close();
   }
@@ -57,7 +58,7 @@ class Keychain {
       params
     });
   }
-  
+
 }
 
 module.exports = Keychain;

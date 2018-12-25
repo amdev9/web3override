@@ -109,5 +109,3 @@ web3Override = (web3) => {
 }
 
 module.exports = web3Override;
-
-// web3.eth.accounts.signTransaction(transactionParams, key);
