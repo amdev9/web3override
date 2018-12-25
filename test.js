@@ -37,6 +37,12 @@ main = async () => {
   override(web3);
   // now we use web3 with keychain
   await web3.eth.accounts.signTransaction(transactionParams, key); // overriden web3 function usage
+
+  // create new key in Keychain
+  const keyInstance = await Keychain.create();
+  const data = await keyInstance.createKey('test1');
+  console.log(data.result);
+  await keyInstance.term();
 }
 main();
 

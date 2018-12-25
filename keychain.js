@@ -44,6 +44,20 @@ class Keychain {
       params
     });
   }
+
+  createKey(name) {
+    const params = {
+      keyname: name,
+      encrypted: true,
+      curve: "secp256k1",
+      cipher: "aes256"
+    }
+    return this.method({
+      command: "create",
+      params
+    });
+  }
+  
 }
 
 module.exports = Keychain;
