@@ -36,7 +36,16 @@ const rlp = require('rlp');
 const Keychain = require('./keychain');
 const API_KEY = 'https://ropsten.infura.io/v3/046804e3dd3240b09834531326f310cf';
 
-let web3 = new Web3(new Web3.providers.HttpProvider(API_KEY)); //
+let web3 = new Web3(new Web3.providers.HttpProvider(API_KEY)); 
+// change to https://github.com/MyEtherWallet/MyEtherWallet/blob/57690d95b88053fda8f507f2c72083d2ab5883ad/src/store/actions.js#L70
+// https://github.com/MyEtherWallet/MyEtherWallet/blob/57690d95b88053fda8f507f2c72083d2ab5883ad/src/store/actions.js#L49
+
+// override 
+
+  // web3,
+  // wallet,
+  // eventHub,
+  // { state, dispatch }
 
 signTransaction = async (txParams, keyname) => {
   // USAGE // 
