@@ -36,39 +36,10 @@ const rlp = require('rlp');
 const Keychain = require('./keychain');
 const API_KEY = 'https://ropsten.infura.io/v3/046804e3dd3240b09834531326f310cf';
 
-
 let web3 = new Web3(new Web3.providers.HttpProvider(API_KEY)); //
- 
-// params
-const key = 'test1@6de493f01bf590c0';
-const to = '0xE8899BA12578d60e4D0683a596EDaCbC85eC18CC';
-const publicKey = '0x6a99ea8d33b64610e1c9ff689f3e95b6959a0cc039621154c7b69c019f015f4521bb9f3fc36a4d447002787d4d408da968185fc5116b8ffd385e8ad3196812e2';
-// const privKey = '1552e84aa697185f06bbd8287725c63362b287bb45d0814308f409ba189f03ba'
-const fromAddress = ethUtil.publicToAddress(publicKey).toString('hex');
-const chainIdHere = 3;
-const value = 100;
-const data = '';
-const gasLimit = 21000; // await web3.eth.estimateGas(draftTxParams) ||
-const nonce = 0; //await web3.eth.getTransactionCount(fromAddress);
-const gasPrice = 100; //await web3.eth.getGasPrice().then(wei => Number(wei))
 
-// ................
-const draftTxParams = {
-  nonce,
-  gasPrice,
-  to,
-  value,
-  data,
-  chainId: chainIdHere
-}
-
-let transactionParams = {
-  ...draftTxParams,
-  gasLimit
-}
-
-signTransaction = async (txParams, keyname) => {
-  const keychain = await Keychain.create(); //   const keychain = new Keychain();
+signTransaction = async (txParams, keychain, keyname) => {
+  // USAGE // const keychain = await Keychain.create();
  
   const buildTxSinature = async (txParams) => {
     class EthereumTxKeychain extends EthereumTx {
@@ -107,10 +78,10 @@ signTransaction = async (txParams, keyname) => {
     ret.s = `0x${signature.slice(64, 128)}`;
     const recovery = parseInt(signature.slice(128, 130), 16);
     let tmpV = recovery + 27;
-    if (chainIdHere > 0) {
-      tmpV += chainIdHere * 2 + 8;
+    if (txParams.chainId > 0) {
+      tmpV += txParams.chainId * 2 + 8;
     }
-    hexString = tmpV.toString(16);
+    let hexString = tmpV.toString(16);
     if (hexString.length % 2) {
       hexString = '0' + hexString;
     }
@@ -130,7 +101,7 @@ signTransaction = async (txParams, keyname) => {
   const rawTransaction = await buildRawTransaction(rawParams);
   const rawTransactionHex = `0x${rawTransaction}`;
   
-  await keychain.term();  
+  // USAGE // await keychain.term();  
   
   console.log({ rawTransactionHex, ...ret, messageHash });
   return { rawTransactionHex, ...ret, messageHash };
@@ -138,6 +109,9 @@ signTransaction = async (txParams, keyname) => {
 
 web3.eth.accounts.signTransaction = signTransaction;
 
+module.exports = web3;
+
 // return web3 from web3-keychain npm module
 // prepare keychain before use this method
-web3.eth.accounts.signTransaction(transactionParams, key);
+
+// USAGE // web3.eth.accounts.signTransaction(transactionParams, key);
