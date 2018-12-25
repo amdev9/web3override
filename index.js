@@ -68,40 +68,8 @@ let transactionParams = {
 }
 
 signTransaction = async (txParams, keyname) => {
-  const keychain = new Keychain();
-  const rsv = async (signature) => {
-    const ret = {};
-    ret.r = `0x${signature.slice(0, 64)}`;
-    ret.s = `0x${signature.slice(64, 128)}`;
-    const recovery = parseInt(signature.slice(128, 130), 16);
-    let tmpV = recovery + 27;
-    if (chainIdHere > 0) {
-      tmpV += chainIdHere * 2 + 8;
-    }
-    hexString = tmpV.toString(16);
-    if (hexString.length % 2) {
-      hexString = '0' + hexString;
-    }
-    ret.v = `0x${hexString}`;
-    return ret;
-  }
-
-  keychain.ws.onopen = async () => {
-    const rawHex = await buildTxSinature(txParams);
-    const messageHash = web3.eth.accounts.hashMessage(rawHex);
-    console.log(messageHash);
-    const data = await keychain.signHex(rawHex, keyname);
-    let ret = await rsv(data.result);
-    console.log(ret);
-    let rawParams = {
-      ...txParams,
-      ...ret
-    }
-    const rawTransaction = await buildRawTransaction(rawParams);
-    const rawTransactionHex = `0x${rawTransaction}`;
-    console.log(rawTransactionHex);
-  }
-
+  const keychain = await Keychain.create(); //   const keychain = new Keychain();
+ 
   const buildTxSinature = async (txParams) => {
     class EthereumTxKeychain extends EthereumTx {
       hashEncode() {
@@ -133,6 +101,40 @@ signTransaction = async (txParams, keyname) => {
     return hex;
   }
 
+  const rsv = async (signature) => {
+    const ret = {};
+    ret.r = `0x${signature.slice(0, 64)}`;
+    ret.s = `0x${signature.slice(64, 128)}`;
+    const recovery = parseInt(signature.slice(128, 130), 16);
+    let tmpV = recovery + 27;
+    if (chainIdHere > 0) {
+      tmpV += chainIdHere * 2 + 8;
+    }
+    hexString = tmpV.toString(16);
+    if (hexString.length % 2) {
+      hexString = '0' + hexString;
+    }
+    ret.v = `0x${hexString}`;
+    return ret;
+  }
+
+  
+  const rawHex = await buildTxSinature(txParams);
+  const messageHash = web3.eth.accounts.hashMessage(rawHex);
+  const data = await keychain.signHex(rawHex, keyname);
+  let ret = await rsv(data.result);
+  let rawParams = {
+    ...txParams,
+    ...ret
+  }
+  const rawTransaction = await buildRawTransaction(rawParams);
+  const rawTransactionHex = `0x${rawTransaction}`;
+  
+
+  await keychain.term();  
+  
+  console.log({ rawTransactionHex, ...ret, messageHash });
+  return { rawTransactionHex, ...ret, messageHash };
 }
 
 signTransaction(transactionParams, key);
