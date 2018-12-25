@@ -39,7 +39,7 @@ web3Override = (web3) => {
         chainId
       };
     }
-    
+
     const keychain = await Keychain.create();
 
     const buildTxSinature = async (txParams) => {
@@ -116,4 +116,7 @@ web3Override = (web3) => {
   return web3;
 }
 
-module.exports = web3Override;
+module.exports = { 
+  override: web3Override, 
+  Keychain: Keychain 
+};
