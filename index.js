@@ -28,100 +28,94 @@ gas / gasLimit - String: The gas provided by the transaction.
 */
 
 
-var Web3 = require('web3');
+
 const EthereumTx = require('ethereumjs-tx');
 const ethUtil = require('ethereumjs-util');
 const rlp = require('rlp');
 
 const Keychain = require('./keychain');
-const API_KEY = 'https://ropsten.infura.io/v3/046804e3dd3240b09834531326f310cf';
 
-let web3 = new Web3(new Web3.providers.HttpProvider(API_KEY)); 
-// change to https://github.com/MyEtherWallet/MyEtherWallet/blob/57690d95b88053fda8f507f2c72083d2ab5883ad/src/store/actions.js#L70
-// https://github.com/MyEtherWallet/MyEtherWallet/blob/57690d95b88053fda8f507f2c72083d2ab5883ad/src/store/actions.js#L49
+web3Override = (web3) => {
 
-// override 
-
-  // web3,
-  // wallet,
-  // eventHub,
-  // { state, dispatch }
-
-signTransaction = async (txParams, keyname) => {
-  // USAGE // 
-  const keychain = await Keychain.create();
- 
-  const buildTxSinature = async (txParams) => {
-    class EthereumTxKeychain extends EthereumTx {
-      hashEncode() {
-        let items
-        if (this._chainId > 0) {
-          const raw = this.raw.slice()
-          this.v = this._chainId
-          this.r = 0
-          this.s = 0
-          items = this.raw
-          this.raw = raw
-        } else {
-          items = this.raw.slice(0, 6)
+  signTransaction = async (txParams, keyname) => {
+    // USAGE // 
+    const keychain = await Keychain.create();
+   
+    const buildTxSinature = async (txParams) => {
+      class EthereumTxKeychain extends EthereumTx {
+        hashEncode() {
+          let items
+          if (this._chainId > 0) {
+            const raw = this.raw.slice()
+            this.v = this._chainId
+            this.r = 0
+            this.s = 0
+            items = this.raw
+            this.raw = raw
+          } else {
+            items = this.raw.slice(0, 6)
+          }
+          // create hash
+          return rlp.encode(items)
         }
-        // create hash
-        return rlp.encode(items)
       }
+      const tx = new EthereumTxKeychain(txParams);
+      let buffer = tx.hashEncode(false);
+      const hex = buffer.toString('hex');
+      return hex;
     }
-    const tx = new EthereumTxKeychain(txParams);
-    let buffer = tx.hashEncode(false);
-    const hex = buffer.toString('hex');
-    return hex;
-  }
-
-  const buildRawTransaction = async (txParams) => {
-    const tx = new EthereumTx(txParams);
-    let buffer = tx.serialize();
-    const hex = buffer.toString('hex');
-    return hex;
-  }
-
-  const rsv = async (signature) => {
-    const ret = {};
-    ret.r = `0x${signature.slice(0, 64)}`;
-    ret.s = `0x${signature.slice(64, 128)}`;
-    const recovery = parseInt(signature.slice(128, 130), 16);
-    let tmpV = recovery + 27;
-    if (txParams.chainId > 0) {
-      tmpV += txParams.chainId * 2 + 8;
+  
+    const buildRawTransaction = async (txParams) => {
+      const tx = new EthereumTx(txParams);
+      let buffer = tx.serialize();
+      const hex = buffer.toString('hex');
+      return hex;
     }
-    let hexString = tmpV.toString(16);
-    if (hexString.length % 2) {
-      hexString = '0' + hexString;
+  
+    const rsv = async (signature) => {
+      const ret = {};
+      ret.r = `0x${signature.slice(0, 64)}`;
+      ret.s = `0x${signature.slice(64, 128)}`;
+      const recovery = parseInt(signature.slice(128, 130), 16);
+      let tmpV = recovery + 27;
+      if (txParams.chainId > 0) {
+        tmpV += txParams.chainId * 2 + 8;
+      }
+      let hexString = tmpV.toString(16);
+      if (hexString.length % 2) {
+        hexString = '0' + hexString;
+      }
+      ret.v = `0x${hexString}`;
+      return ret;
     }
-    ret.v = `0x${hexString}`;
-    return ret;
+  
+    
+    const rawHex = await buildTxSinature(txParams);
+    const messageHash = web3.eth.accounts.hashMessage(rawHex);
+    const data = await keychain.signHex(rawHex, keyname);
+    let ret = await rsv(data.result);
+    let rawParams = {
+      ...txParams,
+      ...ret
+    }
+    const rawTransaction = await buildRawTransaction(rawParams);
+    const rawTransactionHex = `0x${rawTransaction}`;
+    
+    // USAGE // await keychain.term();  
+    
+    await keychain.term();
+    console.log({ rawTransactionHex, ...ret, messageHash });
+    return { rawTransactionHex, ...ret, messageHash };
   }
+  
 
-  
-  const rawHex = await buildTxSinature(txParams);
-  const messageHash = web3.eth.accounts.hashMessage(rawHex);
-  const data = await keychain.signHex(rawHex, keyname);
-  let ret = await rsv(data.result);
-  let rawParams = {
-    ...txParams,
-    ...ret
-  }
-  const rawTransaction = await buildRawTransaction(rawParams);
-  const rawTransactionHex = `0x${rawTransaction}`;
-  
-  // USAGE // await keychain.term();  
-  
-  await keychain.term();
-  console.log({ rawTransactionHex, ...ret, messageHash });
-  return { rawTransactionHex, ...ret, messageHash };
+  web3.eth.accounts.signTransaction = signTransaction;
+  return web3;
 }
 
-web3.eth.accounts.signTransaction = signTransaction;
+module.exports = web3Override;
 
-module.exports = web3;
-
+ 
 // return web3 from web3-keychain npm module
 // prepare keychain before use this method
 

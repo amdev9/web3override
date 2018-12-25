@@ -1,6 +1,9 @@
 const Keychain = require('./keychain');
-const web3 = require('./index');
+const Web3 = require('web3');
+const override = require('./index');
+const API_KEY = 'https://ropsten.infura.io/v3/046804e3dd3240b09834531326f310cf';
 
+let web3 = new Web3(new Web3.providers.HttpProvider(API_KEY)); 
 
 // params
 const key = 'test1@6de493f01bf590c0';
@@ -31,7 +34,12 @@ let transactionParams = {
 }
 
 main = async () => {
+  override(web3);
+  // const keychain = await Keychain.create(); // create Keychain class instance & wait for ws connection to be open
+
   await web3.eth.accounts.signTransaction(transactionParams, key); // overriden web3 function usage
+  
+  // await keychain.term();  // terminate keychain connection
 }
 main();
 
