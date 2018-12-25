@@ -4,10 +4,19 @@
 
 **Usage**
 
-![alt text](Screen1.png)
+```javascript
+  // create new key in Keychain
+  const keyInstance = await Module.Keychain.create();
+  const data = await keyInstance.createKey('test1');
+  const key = data.result;
+  await keyInstance.term();
 
+  Module.override(web3);
+  // now we use web3 with keychain
+  await web3.eth.accounts.signTransaction(transactionParams, key); // overriden web3 function usage
+```
 **Result**
 
-![alt text](Screen.png)
+![alt text](https://raw.githubusercontent.com/cypherpunk99/web3override/master/Screen.png)
 
 
