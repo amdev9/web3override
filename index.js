@@ -38,8 +38,9 @@ const API_KEY = 'https://ropsten.infura.io/v3/046804e3dd3240b09834531326f310cf';
 
 let web3 = new Web3(new Web3.providers.HttpProvider(API_KEY)); //
 
-signTransaction = async (txParams, keychain, keyname) => {
-  // USAGE // const keychain = await Keychain.create();
+signTransaction = async (txParams, keyname) => {
+  // USAGE // 
+  const keychain = await Keychain.create();
  
   const buildTxSinature = async (txParams) => {
     class EthereumTxKeychain extends EthereumTx {
@@ -103,6 +104,7 @@ signTransaction = async (txParams, keychain, keyname) => {
   
   // USAGE // await keychain.term();  
   
+  await keychain.term();
   console.log({ rawTransactionHex, ...ret, messageHash });
   return { rawTransactionHex, ...ret, messageHash };
 }
