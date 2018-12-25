@@ -16,7 +16,6 @@ web3.eth.accounts.signTransaction({
   rawTransaction: '0xf86a8086d55698372431831e848094f0109fc8df283027b6285cc889f5aa624eac1f55843b9aca008025a009ebb6ca057a0535d6186462bc0b465b561c94a295bdb0621fc19208ab149a9ca0440ffd775ce91a833ab410777204d5341a6f9fa91216a6f3ee2c051fea6a0428'
 }
 
-
 nonce - String: (optional) The nonce to use when signing this transaction. Default will use web3.eth.getTransactionCount().
 chainId - String: (optional) The chain id to use when signing this transaction. Default will use web3.eth.net.getId().
 to - String: (optional) The recevier of the transaction, can be empty when deploying a contract.
@@ -27,20 +26,14 @@ gas / gasLimit - String: The gas provided by the transaction.
 
 */
 
-
-
 const EthereumTx = require('ethereumjs-tx');
-const ethUtil = require('ethereumjs-util');
 const rlp = require('rlp');
-
 const Keychain = require('./keychain');
 
 web3Override = (web3) => {
-
   signTransaction = async (txParams, keyname) => {
-    // USAGE // 
     const keychain = await Keychain.create();
-   
+
     const buildTxSinature = async (txParams) => {
       class EthereumTxKeychain extends EthereumTx {
         hashEncode() {
@@ -55,7 +48,6 @@ web3Override = (web3) => {
           } else {
             items = this.raw.slice(0, 6)
           }
-          // create hash
           return rlp.encode(items)
         }
       }
@@ -64,14 +56,14 @@ web3Override = (web3) => {
       const hex = buffer.toString('hex');
       return hex;
     }
-  
+
     const buildRawTransaction = async (txParams) => {
       const tx = new EthereumTx(txParams);
       let buffer = tx.serialize();
       const hex = buffer.toString('hex');
       return hex;
     }
-  
+
     const rsv = async (signature) => {
       const ret = {};
       ret.r = `0x${signature.slice(0, 64)}`;
@@ -88,8 +80,7 @@ web3Override = (web3) => {
       ret.v = `0x${hexString}`;
       return ret;
     }
-  
-    
+
     const rawHex = await buildTxSinature(txParams);
     const messageHash = web3.eth.accounts.hashMessage(rawHex);
     const data = await keychain.signHex(rawHex, keyname);
@@ -100,23 +91,23 @@ web3Override = (web3) => {
     }
     const rawTransaction = await buildRawTransaction(rawParams);
     const rawTransactionHex = `0x${rawTransaction}`;
-    
-    // USAGE // await keychain.term();  
-    
     await keychain.term();
-    console.log({ rawTransactionHex, ...ret, messageHash });
-    return { rawTransactionHex, ...ret, messageHash };
-  }
-  
+    console.log({
+      rawTransactionHex,
+      ...ret,
+      messageHash
+    });
 
+    return {
+      rawTransactionHex,
+      ...ret,
+      messageHash
+    };
+  }
   web3.eth.accounts.signTransaction = signTransaction;
   return web3;
 }
 
 module.exports = web3Override;
 
- 
-// return web3 from web3-keychain npm module
-// prepare keychain before use this method
-
-// USAGE // web3.eth.accounts.signTransaction(transactionParams, key);
+// web3.eth.accounts.signTransaction(transactionParams, key);

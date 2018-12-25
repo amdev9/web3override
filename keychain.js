@@ -1,8 +1,5 @@
-// const WebSocket = require('ws');
-
 const W3CWebSocket = require('websocket').w3cwebsocket;
 const WebSocketAsPromised = require('websocket-as-promised');
-
 
 class Keychain {
   constructor() { // add create function instead https://stackoverflow.com/questions/36363278/does-async-await-will-allow-us-to-be-used-on-constructors
