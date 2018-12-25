@@ -130,16 +130,14 @@ signTransaction = async (txParams, keyname) => {
   const rawTransaction = await buildRawTransaction(rawParams);
   const rawTransactionHex = `0x${rawTransaction}`;
   
-
   await keychain.term();  
   
   console.log({ rawTransactionHex, ...ret, messageHash });
   return { rawTransactionHex, ...ret, messageHash };
 }
 
-
 web3.eth.accounts.signTransaction = signTransaction;
 
 // return web3 from web3-keychain npm module
-
+// prepare keychain before use this method
 web3.eth.accounts.signTransaction(transactionParams, key);
