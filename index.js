@@ -32,6 +32,8 @@ const Keychain = require('./keychain');
 
 web3Override = (web3) => {
   signTransaction = async (txParams, keyname) => {
+    txParams.gasLimit = txParams.gas;
+
     if (!txParams.chainId) {
       const chainId = await web3.eth.net.getId();
       txParams = Object.assign({}, txParams, { chainId })
