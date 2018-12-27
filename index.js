@@ -65,7 +65,8 @@ web3Override = (web3) => {
       const tx = new EthereumTxKeychain(txParams);
       let buffer = tx.hashEncode(false);
       const hex = buffer.toString('hex');
-      return hex;
+      const messageHash = tx.hash();
+      return { hex,  messageHash} ;
     }
 
     const buildRawTransaction = async (txParams) => {
@@ -75,7 +76,7 @@ web3Override = (web3) => {
       return hex;
     }
 
-    const rsv = async (signature) => {
+    const rsv = (signature) => {
       const ret = {};
       ret.r = `0x${signature.slice(0, 64)}`;
       ret.s = `0x${signature.slice(64, 128)}`;
@@ -92,10 +93,11 @@ web3Override = (web3) => {
       return ret;
     }
 
-    const rawHex = await buildTxSinature(txParams);
-    const messageHash = web3.eth.accounts.hashMessage(rawHex);
+    const result = await buildTxSinature(txParams);
+    const rawHex = result.hex;
+    const messageHash = result.messageHash;
     const data = await keychain.signHex(rawHex, keyname);
-    let ret = await rsv(data.result);
+    const ret = rsv(data.result);
     let rawParams = Object.assign({}, txParams, ret);
     // {
     //   ...txParams,
