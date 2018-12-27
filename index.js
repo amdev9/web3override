@@ -63,9 +63,10 @@ web3Override = (web3) => {
         }
       }
       const tx = new EthereumTxKeychain(txParams);
-      let buffer = tx.hashEncode(false);
+      const messageHash = `0x${tx.hash().toString('hex')}`;
+      let buffer = tx.hashEncode();
       const hex = buffer.toString('hex');
-      const messageHash = tx.hash();
+     
       return { hex,  messageHash} ;
     }
 
