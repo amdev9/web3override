@@ -1,31 +1,3 @@
-/*
-web3.eth.accounts.signTransaction({
-  to: '0xF0109fC8DF283027b6285cc889F5aA624EaC1F55',
-  value: '1000000000',
-  gas: 2000000,
-  gasPrice: '234567897654321',
-  nonce: 0,
-  chainId: 1
-}, '0x4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f362318')
-.then(console.log);
-> {
-  messageHash: '0x6893a6ee8df79b0f5d64a180cd1ef35d030f3e296a5361cf04d02ce720d32ec5',
-  r: '0x9ebb6ca057a0535d6186462bc0b465b561c94a295bdb0621fc19208ab149a9c',
-  s: '0x440ffd775ce91a833ab410777204d5341a6f9fa91216a6f3ee2c051fea6a0428',
-  v: '0x25',
-  rawTransaction: '0xf86a8086d55698372431831e848094f0109fc8df283027b6285cc889f5aa624eac1f55843b9aca008025a009ebb6ca057a0535d6186462bc0b465b561c94a295bdb0621fc19208ab149a9ca0440ffd775ce91a833ab410777204d5341a6f9fa91216a6f3ee2c051fea6a0428'
-}
-
-nonce - String: (optional) The nonce to use when signing this transaction. Default will use web3.eth.getTransactionCount().
-chainId - String: (optional) The chain id to use when signing this transaction. Default will use web3.eth.net.getId().
-to - String: (optional) The recevier of the transaction, can be empty when deploying a contract.
-data - String: (optional) The call data of the transaction, can be empty for simple value transfers.
-value - String: (optional) The value of the transaction in wei.
-gasPrice - String: (optional) The gas price set by this transaction, if empty, it will use web3.eth.gasPrice()
-gas / gasLimit - String: The gas provided by the transaction.
-
-*/
-
 const EthereumTx = require('ethereumjs-tx');
 const rlp = require('rlp');
 const Keychain = require('./keychain');
@@ -37,10 +9,7 @@ web3Override = (web3) => {
     if (!txParams.chainId) {
       const chainId = await web3.eth.net.getId();
       txParams = Object.assign({}, txParams, { chainId })
-      // txParams = { 
-      //   ...txParams,
-      //   chainId
-      // };
+ 
     }
 
     const keychain = await Keychain.create();
@@ -63,11 +32,10 @@ web3Override = (web3) => {
         }
       }
       const tx = new EthereumTxKeychain(txParams);
-      const messageHash = `0x${tx.hash().toString('hex')}`;
       let buffer = tx.hashEncode();
       const hex = buffer.toString('hex');
      
-      return { hex,  messageHash} ;
+      return hex ;
     }
 
     const buildRawTransaction = async (txParams) => {
@@ -94,27 +62,16 @@ web3Override = (web3) => {
       return ret;
     }
 
-    const result = await buildTxSinature(txParams);
-    const rawHex = result.hex;
-    const messageHash = result.messageHash;
+    const rawHex = await buildTxSinature(txParams);
+ 
     const data = await keychain.signHex(rawHex, keyname);
     const ret = rsv(data.result);
     let rawParams = Object.assign({}, txParams, ret);
-    // {
-    //   ...txParams,
-    //   ...ret
-    // }
     const raw = await buildRawTransaction(rawParams);
     const rawTransaction = `0x${raw}`;
     await keychain.term();
-    // console.log({
-    //   rawTransactionHex,
-    //   ...ret,
-    //   messageHash
-    // });
-
+ 
     return {
-      messageHash,
       v: ret.v,
       r: ret.r,
       s: ret.s,
