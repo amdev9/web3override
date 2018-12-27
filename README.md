@@ -1,3 +1,6 @@
+
+[![npm version](https://badge.fury.io/js/web3override.svg)](https://badge.fury.io/js/web3override)
+
 * `keychain.js` - Keychain class with ws connection initialization
 * `index.js` - override `web3.eth.accounts.signTransaction` method 
 * `test.js` - example usage together (`keychain` + `web3`) 
