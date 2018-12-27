@@ -1,4 +1,5 @@
 
+
 [![npm version](https://badge.fury.io/js/web3override.svg)](https://badge.fury.io/js/web3override)
 
 * `keychain.js` - Keychain class with ws connection initialization
@@ -28,3 +29,5 @@ Add key to your `key_data`:
 keyname: test1@76de427d42c38be4
 password: qwe
 ```
+
+![alt image](https://raw.githubusercontent.com/cypherpunk99/web3override/master/screencast.gif)
