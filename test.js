@@ -30,7 +30,8 @@ main = async () => {
 
   Module.override(web3);
   // now we use web3 with keychain
-  await web3.eth.accounts.signTransaction(transactionParams, key); // overriden web3 function usage
+  const res = await web3.eth.accounts.signTransaction(transactionParams, key); // overriden web3 function usage
+  console.log(res);
 }
 main();
 
