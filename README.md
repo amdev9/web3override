@@ -20,3 +20,8 @@
 ```
 npm run test
 ```
+Add key to your `key_data`:
+```
+keyname: test1@76de427d42c38be4
+password: qwe
+```
