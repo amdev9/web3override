@@ -101,8 +101,8 @@ web3Override = (web3) => {
     //   ...txParams,
     //   ...ret
     // }
-    const rawTransaction = await buildRawTransaction(rawParams);
-    const rawTransactionHex = `0x${rawTransaction}`;
+    const raw = await buildRawTransaction(rawParams);
+    const rawTransaction = `0x${rawTransaction}`;
     await keychain.term();
     // console.log({
     //   rawTransactionHex,
@@ -111,11 +111,11 @@ web3Override = (web3) => {
     // });
 
     return {
-      rawTransactionHex,
+      messageHash,
+      v: ret.v,
       r: ret.r,
       s: ret.s,
-      v: ret.v,
-      messageHash
+      rawTransaction
     };
   }
   web3.eth.accounts.signTransaction = signTransaction;
