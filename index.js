@@ -102,7 +102,7 @@ web3Override = (web3) => {
     //   ...ret
     // }
     const raw = await buildRawTransaction(rawParams);
-    const rawTransaction = `0x${rawTransaction}`;
+    const rawTransaction = `0x${raw}`;
     await keychain.term();
     // console.log({
     //   rawTransactionHex,
