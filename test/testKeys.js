@@ -1,5 +1,5 @@
 const Web3 = require('web3');
-const Module = require('./index');
+const Module = require('../lib/index');
 // const ethUtl = require('ethereumjs-util');
 const API_KEY = 'https://ropsten.infura.io/v3/046804e3dd3240b09834531326f310cf';
 

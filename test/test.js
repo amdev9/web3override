@@ -1,6 +1,6 @@
 const Web3 = require('web3');
 // const  = require('./keychain');
-const Module = require('./index');
+const Module = require('../lib/index');
 const API_KEY = 'https://ropsten.infura.io/v3/046804e3dd3240b09834531326f310cf';
 
 let web3 = new Web3(new Web3.providers.HttpProvider(API_KEY)); 
