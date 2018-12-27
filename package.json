@@ -1,7 +1,7 @@
 {
   "name": "web3override",
-  "version": "0.0.7",
-  "description": "",
+  "version": "0.0.8",
+  "description": "Keychain and web3 override methods",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
