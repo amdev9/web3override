@@ -27,7 +27,6 @@ gas / gasLimit - String: The gas provided by the transaction.
 */
 
 const EthereumTx = require('ethereumjs-tx');
-const rlp = require('rlp');
 const Keychain = require('./keychain');
 
 web3Override = (web3) => {
@@ -37,7 +36,7 @@ web3Override = (web3) => {
     if (!txParams.chainId) {
       const chainId = await web3.eth.net.getId();
       txParams = Object.assign({}, txParams, { chainId })
-      // txParams = { 
+      // txParams = {
       //   ...txParams,
       //   chainId
       // };
@@ -46,27 +45,13 @@ web3Override = (web3) => {
     const keychain = await Keychain.create();
 
     const buildTxSinature = async (txParams) => {
-      class EthereumTxKeychain extends EthereumTx {
-        hashEncode() {
-          let items
-          if (this._chainId > 0) {
-            const raw = this.raw.slice()
-            this.v = this._chainId
-            this.r = 0
-            this.s = 0
-            items = this.raw
-            this.raw = raw
-          } else {
-            items = this.raw.slice(0, 6)
-          }
-          return rlp.encode(items)
-        }
-      }
-      const tx = new EthereumTxKeychain(txParams);
-      let buffer = tx.hashEncode(false);
-      const hex = buffer.toString('hex');
-      const messageHash = tx.hash();
-      return { hex,  messageHash} ;
+      const rsv = {r: '0x00', s:'0x00', v: '0x03'};
+      const tx = {...txParams, ...rsv};
+      const ethTx = new EthereumTx(tx);
+      const buffer = ethTx.serialize();
+      const rawTransaction = buffer.toString('hex');
+      const messageHash = ethTx.hash().toString('hex');
+      return { hex: rawTransaction,  messageHash } ;
     }
 
     const buildRawTransaction = async (txParams) => {
@@ -95,7 +80,7 @@ web3Override = (web3) => {
 
     const result = await buildTxSinature(txParams);
     const rawHex = result.hex;
-    const messageHash = result.messageHash;
+    const messageHash = '0x' + result.messageHash;
     const data = await keychain.signHex(rawHex, keyname);
     const ret = rsv(data.result);
     let rawParams = Object.assign({}, txParams, ret);
