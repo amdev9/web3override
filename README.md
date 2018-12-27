@@ -15,8 +15,8 @@
   // now we use web3 with keychain
   await web3.eth.accounts.signTransaction(transactionParams, key); // overriden web3 function usage
 ```
-**Result**
+**Run tests**
 
-![alt text](https://raw.githubusercontent.com/cypherpunk99/web3override/master/Screen.png)
-
-
+```
+npm run test
+```

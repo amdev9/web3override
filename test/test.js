@@ -1,5 +1,6 @@
+var expect = require('chai').expect;
 const Web3 = require('web3');
-// const  = require('./keychain');
+ 
 const Module = require('../lib/index');
 const API_KEY = 'https://ropsten.infura.io/v3/046804e3dd3240b09834531326f310cf';
 
@@ -21,17 +22,29 @@ const transactionParams = {
   gasLimit
 }
 
-main = async () => {
-  // create new key in Keychain
-  const keyInstance = await Module.Keychain.create();
-  const data = await keyInstance.createKey('test1');
-  const key = data.result;
-  await keyInstance.term();
+describe("Create and sign", () => {
+  let key, resKch, resWeb3;
+  const keyname = 'test1@76de427d42c38be4';  
+  const privateKey = '0xb3d3427eea7867c243baaf2f4c67a9551eea2ea96556acfb0051dffa18d182d4';
 
-  Module.override(web3);
-  // now we use web3 with keychain
-  const res = await web3.eth.accounts.signTransaction(transactionParams, key); // overriden web3 function usage
-  console.log(res);
-}
-main();
+  it('Create new key in Keychain', async () => {
+    const keyInstance = await Module.Keychain.create();
+    const data = await keyInstance.createKey('test1');
+    key = data.result;
+    await keyInstance.term();
+    expect(key).to.have.string('@');
+  });
 
+  it('Sign transaction with web3', async () => {
+    resWeb3 = await web3.eth.accounts.signTransaction(transactionParams, privateKey);  
+    expect(resWeb3).to.have.property('rawTransaction');
+  });
+
+  it('Sign transaction with overriden web3', async () => {
+    Module.override(web3);
+    resKch = await web3.eth.accounts.signTransaction(transactionParams, keyname);  
+    expect(resKch).to.have.property('rawTransaction');
+    expect(resKch).to.be.equal(resWeb3);
+  });
+});
+ 
