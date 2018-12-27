@@ -44,7 +44,13 @@ describe("Create and sign", () => {
     Module.override(web3);
     resKch = await web3.eth.accounts.signTransaction(transactionParams, keyname);  
     expect(resKch).to.have.property('rawTransaction');
-    expect(resKch).to.be.equal(resWeb3);
+   
+    expect(resKch).to.deep.equal(resWeb3);
   });
+
+  it('Overriden web3 signTransaction valid', async () => {
+    expect(resKch).to.deep.equal(resWeb3);
+  });
+
 });
  

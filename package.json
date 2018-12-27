@@ -1,6 +1,6 @@
 {
   "name": "web3override",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Keychain and web3 override",
   "main": "./lib/index.js",
   "scripts": {
@@ -16,7 +16,6 @@
     "chai": "^4.2.0",
     "ethereumjs-tx": "^1.3.7",
     "mocha": "^5.2.0",
-    "rlp": "^2.2.1",
     "web3": "^1.0.0-beta.37",
     "websocket": "^1.0.28",
     "websocket-as-promised": "^0.9.0"
