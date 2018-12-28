@@ -9,9 +9,10 @@ let web3 = new Web3(new Web3.providers.HttpProvider(API_KEY));
 const to = '0xE8899BA12578d60e4D0683a596EDaCbC85eC18CC';
 const value = 100;
 const data = '';
-const gasLimit = 21000; 
+const gas = 21000;
 const nonce = 0;  
 const gasPrice = 100;
+const chainId = 3;
  
 const transactionParams = {
   nonce,
@@ -19,7 +20,8 @@ const transactionParams = {
   to,
   value,
   data,
-  gasLimit
+  gas,
+  chainId
 }
 
 describe("Create and sign", () => {
@@ -36,13 +38,13 @@ describe("Create and sign", () => {
   });
 
   it('Sign transaction with web3', async () => {
-    resWeb3 = await web3.eth.accounts.signTransaction(transactionParams, privateKey);  
+    resWeb3 = await web3.eth.accounts.signTransaction(transactionParams, privateKey);
     expect(resWeb3).to.have.property('rawTransaction');
   });
 
   it('Sign transaction with overriden web3', async () => {
     Module.override(web3);
-    resKch = await web3.eth.accounts.signTransaction(transactionParams, keyname);  
+    resKch = await web3.eth.accounts.signTransaction(transactionParams, keyname);
     expect(resKch).to.have.property('rawTransaction');
   });
 
