@@ -1,6 +1,6 @@
 {
   "name": "web3override",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "Keychain and web3 override",
   "main": "./lib/index.js",
   "scripts": {
