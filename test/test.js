@@ -26,14 +26,17 @@ const transactionParams = {
 };
 
 describe("Create and sign", () => {
-  let key, signResKch, createResKch, signResWeb3, resKch, resWeb3;
+  let signResKch, signResWeb3, resKch, resWeb3;
   let selectedKey;
   const privateKey = '0xb3d3427eea7867c243baaf2f4c67a9551eea2ea96556acfb0051dffa18d182d4';
   const message = '12345';
-  const { selectKey, web3Override } = require('../lib/index');
+  const { sign, signTransaction } = require('../lib/index')(web3);
+  const Keychain = require('../lib/keychain');
 
   it('Select key', async() => {
-    selectedKey = await selectKey();
+    const keychain = await Keychain.create();
+    const data = await keychain.selectKey();
+    selectedKey = data.result;
     console.log('selectedKey: ', selectedKey);
     should.exist(selectedKey);
   });
@@ -50,7 +53,8 @@ describe("Create and sign", () => {
   });
 
   it('Sign with overriden web3', async () => {
-    web3Override(web3);
+    web3.eth.accounts.sign = sign;
+    web3.eth.accounts.signTransaction = signTransaction;
     signResKch = await web3.eth.accounts.sign(message, selectedKey);
     console.log('signResKch: ', signResKch);
     expect(signResKch).to.have.property('signature');
