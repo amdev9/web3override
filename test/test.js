@@ -30,8 +30,9 @@ describe("Create and sign", () => {
   let selectedKey;
   const privateKey = '0xb3d3427eea7867c243baaf2f4c67a9551eea2ea96556acfb0051dffa18d182d4';
   const message = '12345';
-  const { sign, signTransaction } = require('../lib/index')(web3);
-  const Keychain = require('../lib/keychain');
+  const Module = require('../lib/index');
+  const { sign, signTransaction } = Module.web3Override(web3);
+  const Keychain = Module.Keychain;
 
   it('Select key', async() => {
     const keychain = await Keychain.create();
