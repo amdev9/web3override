@@ -1,7 +1,7 @@
 {
   "name": "web3override",
-  "version": "0.0.30",
-  "description": "Keychain and web3 override",
+  "version": "0.0.32",
+  "description": "Keychain npm module",
   "main": "./lib/index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --timeout 15000 --reporter spec"
@@ -13,6 +13,7 @@
   },
   "license": "ISC",
   "dependencies": {
+    "bitcoinjs-lib": "^4.0.3",
     "ethereumjs-tx": "^1.3.7",
     "ethereumjs-util": "^6.0.0",
     "web3": "^1.0.0-beta.37",
