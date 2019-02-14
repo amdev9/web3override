@@ -1,6 +1,6 @@
 {
   "name": "web3override",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "description": "Keychain npm module",
   "main": "./lib/index.js",
   "scripts": {
